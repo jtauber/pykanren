@@ -76,3 +76,33 @@ def extend_s(x, v, s):
 assert extend_s(Var("y"), Var("x"), s3) == False
 assert extend_s(Var("y"), 5, s3) == {Var("y"): 5, Var("x"): Var("y")}
 assert extend_s(Var("x"), Var("x"), {}) == False
+
+
+def unify(u, v, s):
+    u = walk(u, s)
+    v = walk(v, s)
+    if id(u) == id(v):
+        return s
+    elif isinstance(u, Var):
+        if isinstance(v, Var):
+            s[u] = v
+            return s
+        else:
+            return extend_s(u, v, s)
+    elif isinstance(v, Var):
+        return extend_s(v, u, s)
+    # we don't need the pair check yet (???)
+    elif u == v:
+        return s
+    else:
+        return False
+
+
+assert unify(None, 1, {}) == False
+assert unify(None, Var("x"), {}) == {Var("x"): None}
+assert unify(1, None, {}) == False
+assert unify(1, 1, {}) == {}
+assert unify(1, 2, {}) == False
+assert unify(1, Var("x"), {}) == {Var("x"): 1}
+assert unify(Var("x"), 1, {}) == {Var("x"): 1}
+assert unify(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
