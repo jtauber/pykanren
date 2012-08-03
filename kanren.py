@@ -63,3 +63,16 @@ s3 = {Var("x"): Var("y")}
 assert occurs_check(Var("y"), Var("x"), s3) == True
 assert occurs_check(Var("y"), 5, s3) == False
 assert occurs_check(Var("x"), Var("x"), {}) == True
+
+
+def extend_s(x, v, s):
+    if occurs_check(x, v, s):
+        return False
+    else:
+        s[x] = v
+        return s
+
+
+assert extend_s(Var("y"), Var("x"), s3) == False
+assert extend_s(Var("y"), 5, s3) == {Var("y"): 5, Var("x"): Var("y")}
+assert extend_s(Var("x"), Var("x"), {}) == False
