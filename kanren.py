@@ -48,3 +48,18 @@ def walk(v, s):
 
 assert walk(Var("x"), s1) == 5
 assert walk(Var("x"), s2) == 5
+
+
+def occurs_check(x, v, s):
+    v = walk(v, s)
+    if isinstance(v, Var):
+        return v == x
+    # we don't need the pair check yet
+    else:
+        return False
+
+
+s3 = {Var("x"): Var("y")}
+assert occurs_check(Var("y"), Var("x"), s3) == True
+assert occurs_check(Var("y"), 5, s3) == False
+assert occurs_check(Var("x"), Var("x"), {}) == True
