@@ -17,8 +17,18 @@ s1 = {Var("x"): 5, Var("y"): True}
 s2 = {Var("y"): 5, Var("x"): Var("y")}
 
 
+# more idiomatic would be:
+#     return s.get(v, v) if isinstance(v, Var) else v
+# but this parallels walk below better
 def lookup(v, s):
-    return s.get(v, v) if isinstance(v, Var) else v
+    if isinstance(v, Var):
+        a = s.get(v)
+        if a:
+            return a
+        else:
+            return v
+    else:
+        return v
 
 
 assert lookup(Var("x"), s1) == 5
