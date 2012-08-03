@@ -23,3 +23,18 @@ def lookup(v, s):
 
 assert lookup(Var("x"), s1) == 5
 assert lookup(Var("x"), s2) == Var("y")
+
+
+def walk(v, s):
+    if isinstance(v, Var):
+        a = s.get(v)
+        if a:
+            return walk(a, s)
+        else:
+            return v
+    else:
+        return v
+
+
+assert walk(Var("x"), s1) == 5
+assert walk(Var("x"), s2) == 5
