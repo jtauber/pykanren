@@ -145,3 +145,23 @@ def reify_s(v, s):
 def reify(v, s):
     v = walk_star(v, s)
     return walk_star(v, reify_s(v, {}))
+
+
+def eq(u, v):
+    def goal(a):
+        s = unify(u, v, a)
+        if s is False:
+            return []
+        else:
+            return [s]
+    return goal
+
+
+def eq_no_check(u, v):
+    def goal(a):
+        s = unify_no_check(u, v, a)
+        if s is False:
+            return []
+        else:
+            return [s]
+    return goal
