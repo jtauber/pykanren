@@ -3,7 +3,7 @@ class Var:
         self.symbol = symbol
     
     def __eq__(self, other):
-        return self.symbol == other.symbol
+        return isinstance(other, Var) and self.symbol == other.symbol
     
     def __hash__(self):
         return hash(self.symbol)
@@ -67,7 +67,12 @@ def unify(u, v, s):
             return extend_s(u, v, s)
     elif isinstance(v, Var):
         return extend_s(v, u, s)
-    # we don't need the pair check yet (???)
+    elif isinstance(u, list) and isinstance(v, list):
+        if len(u) == 1 and len(v) == 1:
+            return unify(u[0], v[0], s)
+        else:
+            s = unify(u[0], v[0], s)
+            return s and unify(u[1:], v[1:], s)
     elif u == v:
         return s
     else:
@@ -85,7 +90,12 @@ def unify_no_check(u, v, s):
     elif isinstance(v, Var):
         s[v] = u
         return s
-    # we don't need the pair check yet (???)
+    elif isinstance(u, list) and isinstance(v, list):
+        if len(u) == 1 and len(v) == 1:
+            return unify_no_check(u[0], v[0], s)
+        else:
+            s = unify_no_check(u[0], v[0], s)
+            return s and unify_no_check(u[1:], v[1:], s)
     elif u == v:
         return s
     else:

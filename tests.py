@@ -28,22 +28,35 @@ assert extend_s(Var("x"), Var("x"), {}) == False
 
 assert unify(None, 1, {}) == False
 assert unify(None, Var("x"), {}) == {Var("x"): None}
+assert unify(None, [1, Var("x")], {}) == False
 assert unify(1, None, {}) == False
 assert unify(1, 1, {}) == {}
 assert unify(1, 2, {}) == False
 assert unify(1, Var("x"), {}) == {Var("x"): 1}
+assert unify(1, [], {}) == False
 assert unify(Var("x"), 1, {}) == {Var("x"): 1}
 assert unify(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
-
+assert unify(Var("x"), [], {}) == {Var("x"): []}
+assert unify(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
+assert unify([1, 2, 3], [1, 2, 3], {}) == {}
+assert unify([1, 2, 3], [3, 2, 1], {}) == False
+assert unify([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
 
 assert unify_no_check(None, 1, {}) == False
 assert unify_no_check(None, Var("x"), {}) == {Var("x"): None}
+assert unify_no_check(None, [1, Var("x")], {}) == False
 assert unify_no_check(1, None, {}) == False
 assert unify_no_check(1, 1, {}) == {}
 assert unify_no_check(1, 2, {}) == False
 assert unify_no_check(1, Var("x"), {}) == {Var("x"): 1}
+assert unify_no_check(1, [], {}) == False
 assert unify_no_check(Var("x"), 1, {}) == {Var("x"): 1}
 assert unify_no_check(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
+assert unify_no_check(Var("x"), [], {}) == {Var("x"): []}
+assert unify_no_check(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
+assert unify_no_check([1, 2, 3], [1, 2, 3], {}) == {}
+assert unify_no_check([1, 2, 3], [3, 2, 1], {}) == False
+assert unify_no_check([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
 
 
 s = {Var("z"): 6, Var("y"): 5, Var("x"): [Var("y"), Var("z")]}
