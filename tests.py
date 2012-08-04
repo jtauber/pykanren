@@ -44,3 +44,8 @@ assert unify_no_check(1, 2, {}) == False
 assert unify_no_check(1, Var("x"), {}) == {Var("x"): 1}
 assert unify_no_check(Var("x"), 1, {}) == {Var("x"): 1}
 assert unify_no_check(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
+
+
+s = {Var("z"): 6, Var("y"): 5, Var("x"): [Var("y"), Var("z")]}
+assert walk(Var("x"), s) == [Var("y"), Var("z")]
+assert walk_star(Var("x"), s) == [5, 6]

@@ -90,3 +90,13 @@ def unify_no_check(u, v, s):
         return s
     else:
         return False
+
+
+def walk_star(v, s):
+    v = walk(v, s)
+    if isinstance(v, Var):
+        return v
+    if isinstance(v, list):
+        return [walk_star(v[0], s)] if len(v) == 1 else [walk_star(v[0], s)] + walk_star(v[1:], s)
+    else:
+        return v
