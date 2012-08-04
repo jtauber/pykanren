@@ -10,6 +10,8 @@ s2 = {Var("y"): 5, Var("x"): Var("y")}
 assert lookup(Var("x"), s1) == 5
 assert lookup(Var("x"), s2) == Var("y")
 
+assert repr(lookup(Var("x"), {})) == "<x>"
+assert lookup(5, {}) == 5
 
 assert walk(Var("x"), s1) == 5
 assert walk(Var("x"), s2) == 5
@@ -48,6 +50,8 @@ assert unify([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
 # however
 assert unify([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
 
+assert unify({}, {}, {}) == {}
+
 assert unify_no_check(None, 1, {}) == False
 assert unify_no_check(None, Var("x"), {}) == {Var("x"): None}
 assert unify_no_check(None, [1, Var("x")], {}) == False
@@ -69,6 +73,8 @@ assert unify_no_check([[Var("x"), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {Var("x"
 assert unify_no_check([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
 # however
 assert unify_no_check([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
+
+assert unify_no_check({}, {}, {}) == {}
 
 
 s = {Var("z"): 6, Var("y"): 5, Var("x"): [Var("y"), Var("z")]}
