@@ -41,7 +41,13 @@ def occurs_check(x, v, s):
     v = walk(v, s)
     if isinstance(v, Var):
         return v == x
-    # we don't need the pair check yet
+    elif isinstance(v, list):
+        if len(v) == 0:
+            return False
+        elif len(v) == 1:
+            return occurs_check(x, v[0], s)
+        else:
+            return occurs_check(x, v[0], s) or occurs_check(x, v[1:], s)
     else:
         return False
 
