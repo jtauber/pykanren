@@ -111,10 +111,7 @@ def reify_s(v, s):
     if isinstance(v, Var):
         return extend_s(v, reify_name(len(s)), s)
     elif isinstance(v, list):
-        if len(v) == 1:
-            return reify_s(v[0], s)
-        else:
-            return reify_s(v[1:], reify_s(v[0], s))
+        return reify_s(v[0], s) if len(v) == 1 else reify_s(v[1:], reify_s(v[0], s))
     else:
         return s
 
