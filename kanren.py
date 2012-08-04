@@ -68,11 +68,16 @@ def unify(u, v, s):
     elif isinstance(v, Var):
         return extend_s(v, u, s)
     elif isinstance(u, list) and isinstance(v, list):
-        if len(u) == 1 and len(v) == 1:
+        if len(u) != len(v):
+            return False
+        elif len(u) == 1 and len(v) == 1:
             return unify(u[0], v[0], s)
         else:
             s = unify(u[0], v[0], s)
-            return s and unify(u[1:], v[1:], s)
+            if s is False:
+                return False
+            else:
+                return unify(u[1:], v[1:], s)
     elif u == v:
         return s
     else:
@@ -91,11 +96,16 @@ def unify_no_check(u, v, s):
         s[v] = u
         return s
     elif isinstance(u, list) and isinstance(v, list):
-        if len(u) == 1 and len(v) == 1:
+        if len(u) != len(v):
+            return False
+        elif len(u) == 1 and len(v) == 1:
             return unify_no_check(u[0], v[0], s)
         else:
             s = unify_no_check(u[0], v[0], s)
-            return s and unify_no_check(u[1:], v[1:], s)
+            if s is False:
+                return False
+            else:
+                return unify_no_check(u[1:], v[1:], s)
     elif u == v:
         return s
     else:
