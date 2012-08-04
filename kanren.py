@@ -100,3 +100,25 @@ def walk_star(v, s):
         return [walk_star(v[0], s)] if len(v) == 1 else [walk_star(v[0], s)] + walk_star(v[1:], s)
     else:
         return v
+
+
+def reify_name(n):
+    return "_%s" % n
+
+
+def reify_s(v, s):
+    v = walk(v, s)
+    if isinstance(v, Var):
+        return extend_s(v, reify_name(len(s)), s)
+    elif isinstance(v, list):
+        if len(v) == 1:
+            return reify_s(v[0], s)
+        else:
+            return reify_s(v[1:], reify_s(v[0], s))
+    else:
+        return s
+
+
+def reify(v, s):
+    v = walk_star(v, s)
+    return walk_star(v, reify_s(v, {}))

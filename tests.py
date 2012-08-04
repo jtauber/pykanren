@@ -49,3 +49,6 @@ assert unify_no_check(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
 s = {Var("z"): 6, Var("y"): 5, Var("x"): [Var("y"), Var("z")]}
 assert walk(Var("x"), s) == [Var("y"), Var("z")]
 assert walk_star(Var("x"), s) == [5, 6]
+
+
+assert reify([5, Var("x"), [True, Var("y"), Var("x")], Var("z")], {}) == [5, "_0", [True, "_1", "_0"], "_2"]
