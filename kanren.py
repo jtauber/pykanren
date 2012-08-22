@@ -223,6 +223,17 @@ def mplusi(a_inf, f):
         return (a, lambda: mplusi(f(), f0))
 
 
+def bind(a_inf, g):
+    if not a_inf:
+        return False
+    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
+        return g(a_inf)
+    else:
+        a = a_inf[0]
+        f = a_inf[1]
+        return mplus(g(a), lambda: bind(f(), g))
+
+
 def eq(u, v):
     def goal(a):
         s = unify(u, v, a)
