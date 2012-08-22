@@ -85,15 +85,16 @@ assert walk_star(Var("x"), s) == [5, 6]
 assert reify([5, Var("x"), [True, Var("y"), Var("x")], Var("z")], {}) == [5, "_0", [True, "_1", "_0"], "_2"]
 
 
-assert eq(1, 1)({}) == [{}]
-assert eq(1, 2)({}) == []
+assert eq(1, 1)({}) == {}
+assert eq(1, 2)({}) == False
 
-
-assert eq_no_check(1, 1)({}) == [{}]
-assert eq_no_check(1, 2)({}) == []
+assert eq_no_check(1, 1)({}) == {}
+assert eq_no_check(1, 2)({}) == False
 
 
 assert map_inf(1, None, ()) == ()
+assert map_inf(None, lambda i: i, 1) == (1,)
+assert map_inf(None, lambda i: i, (1, lambda: 2)) == (1, (2,))
 assert map_inf(3, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
 assert map_inf(2, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2,))
 assert map_inf(1, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)
@@ -116,6 +117,11 @@ def expand(x):
 
 assert expand(mplus((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1, (2, (3, (4, (5,)))))
 assert expand(mplusi((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1, (4, (2, (5, (3,)))))
+
+assert all_()({}) == {}
+assert all_(SUCCESS)({}) == {}
+assert all_(eq(1, 1), eq(2, 2))({}) == False
+assert all_(eq(1, 2), eq(1, 2))({}) == False
 
 
 print("all tests passed.")

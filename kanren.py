@@ -228,21 +228,26 @@ def bind(a_inf, g):
         return mplus(g(a_inf[0]), lambda: bind(a_inf[1](), g))
 
 
+SUCCESS = lambda s: s
+
+
+def all_(*g):
+    if not g:
+        return SUCCESS
+    elif len(g) == 1:
+        return g[0]
+    else:
+        return lambda s: bind(g[0](s), lambda s: all_(*g[1:])(s))
+
+
 def eq(u, v):
     def goal(a):
-        s = unify(u, v, a)
-        if s is False:
-            return []
-        else:
-            return [s]
+        s = unify_check(u, v, a)
+        return s
     return goal
 
 
 def eq_no_check(u, v):
     def goal(a):
-        s = unify(u, v, a)
-        if s is False:
-            return []
-        else:
-            return [s]
+        return unify(u, v, a)
     return goal
