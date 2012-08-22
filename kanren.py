@@ -240,14 +240,13 @@ def all_(*g):
         return lambda s: bind(g[0](s), lambda s: all_(*g[1:])(s))
 
 
-def eq(u, v):
+def eq_check(u, v):
     def goal(a):
-        s = unify_check(u, v, a)
-        return s
+        return unify_check(u, v, a)
     return goal
 
 
-def eq_no_check(u, v):
+def eq(u, v):
     def goal(a):
         return unify(u, v, a)
     return goal
