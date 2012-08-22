@@ -101,4 +101,12 @@ assert map_inf(0, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)  # is this c
 assert map_inf(None, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
 
 
+assert pythonic_map_inf(1, None, []) == []
+assert pythonic_map_inf(3, lambda i: i, [1, 2, 3]) == [1, 2, 3]
+assert pythonic_map_inf(2, lambda i: i, [1, 2, 3]) == [1, 2]
+assert pythonic_map_inf(1, lambda i: i, [1, 2, 3]) == [1]
+assert pythonic_map_inf(0, lambda i: i, [1, 2, 3]) == []
+assert pythonic_map_inf(None, lambda i: i, [1, 2, 3]) == [1, 2, 3]
+
+
 print("all tests passed.")

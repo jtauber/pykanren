@@ -192,6 +192,15 @@ def map_inf(n, p, a_inf):
             return (p(a),)
 
 
+from itertools import islice, imap
+
+
+# here's a pythonic version
+# it assumes a_inf is an iterable and returns a list
+def pythonic_map_inf(n, p, a_inf):
+    return list(islice(imap(p, a_inf), n))
+
+
 def eq(u, v):
     def goal(a):
         s = unify(u, v, a)
