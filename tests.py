@@ -82,7 +82,7 @@ assert walk(Var("x"), s) == [Var("y"), Var("z")]
 assert walk_star(Var("x"), s) == [5, 6]
 
 
-assert reify([5, Var("x"), [True, Var("y"), Var("x")], Var("z")], {}) == [5, "_0", [True, "_1", "_0"], "_2"]
+assert reify([5, Var("x"), [True, Var("y"), Var("x")], Var("z")]) == [5, "_0", [True, "_1", "_0"], "_2"]
 
 
 assert eq_check(1, 1)({}) == {}
@@ -120,8 +120,13 @@ assert expand(mplusi((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1
 
 assert all_()({}) == {}
 assert all_(SUCCESS)({}) == {}
-assert all_(eq(1, 1), eq(2, 2))({}) == False
+assert all_(eq(1, 1), eq(2, 2))({}) == {}
 assert all_(eq(1, 2), eq(1, 2))({}) == False
+
+assert run(None, "q", FAIL) == ()
+assert run(None, "q", eq(True, Var("q"))) == (True,)
+assert run(None, "q", FAIL, eq(True, Var("q"))) == ()
+assert run(None, "q", SUCCESS, eq(True, Var("q"))) == (True,)
 
 
 print("all tests passed.")

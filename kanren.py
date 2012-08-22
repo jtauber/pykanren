@@ -161,8 +161,7 @@ def reify_name(n):
     return "_%s" % n
 
 
-def reify(v, s):
-    v = walk_star(v, s)
+def reify(v):
     # we just use {} for minikanren's empty-s
     return walk_star(v, reify_s(v, {}))
 
@@ -177,7 +176,7 @@ def reify(v, s):
 # This will change to be more Pythonic once I work out how to change
 # everything else that is based on this approach.
 def map_inf(n, p, a_inf):
-    if not a_inf:
+    if a_inf is False or a_inf == ():
         return ()
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return (p(a_inf),)
@@ -201,7 +200,7 @@ def pythonic_map_inf(n, p, a_inf):
 
 # chains two streams
 def mplus(a_inf, f):
-    if not a_inf:
+    if a_inf is False or a_inf == ():
         return f()
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return (a_inf, f)
@@ -211,7 +210,7 @@ def mplus(a_inf, f):
 
 # interleaves two streams
 def mplusi(a_inf, f):
-    if not a_inf:
+    if a_inf is False or a_inf == ():
         return f()
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return (a_inf, f)
@@ -220,7 +219,7 @@ def mplusi(a_inf, f):
 
 
 def bind(a_inf, g):
-    if not a_inf:
+    if a_inf is False or a_inf == ():
         return False
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return g(a_inf)
@@ -229,6 +228,7 @@ def bind(a_inf, g):
 
 
 SUCCESS = lambda s: s
+FAIL = lambda s: False
 
 
 def all_(*g):
@@ -250,3 +250,11 @@ def eq(u, v):
     def goal(a):
         return unify(u, v, a)
     return goal
+
+
+def run(n, x, *g):
+    x = Var(x)
+    if n is None or n > 0:
+        return map_inf(n, lambda s: reify(walk_star(x, s)), all_(*g)({}))
+    else:
+        return ()
