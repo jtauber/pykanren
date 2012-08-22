@@ -93,4 +93,13 @@ assert eq_no_check(1, 1)({}) == [{}]
 assert eq_no_check(1, 2)({}) == []
 
 
+assert map_inf(1, None, ()) == ()
+assert map_inf(3, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
+assert map_inf(2, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2,))
+assert map_inf(1, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)
+assert map_inf(0, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)  # is this correct?
+assert map_inf(None, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
+
+
+
 print("all tests passed.")

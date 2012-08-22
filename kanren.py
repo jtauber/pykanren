@@ -189,7 +189,7 @@ def map_inf(n, p, a_inf):
         elif n > 1:
             return (p(a), map_inf(n - 1, p, f()))
         else:
-            return ()
+            return (p(a),)
 
 
 def eq(u, v):
