@@ -101,5 +101,4 @@ assert map_inf(0, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)  # is this c
 assert map_inf(None, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
 
 
-
 print("all tests passed.")
