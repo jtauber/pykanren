@@ -1,5 +1,5 @@
 # comments in this file referring to minikanren are specifically to
-#     https://github.com/webyrd/miniKanren/blob/master/mk.scm
+#     http://kanren.cvs.sourceforge.net/kanren/kanren/mini/mk.scm
 # which is the implementation used in the 2nd printing of The Reasoned Schemer
 
 
@@ -77,6 +77,29 @@ def unify(u, v, s):
         return False
 
 
+def ext_s_check(x, v, s):
+    if occurs_check(x, v, s):
+        return False
+    else:
+        s[x] = v
+        return s
+
+
+def occurs_check(x, v, s):
+    v = walk(v, s)
+    if isinstance(v, Var):
+        return v == x
+    elif isinstance(v, list):
+        if len(v) == 0:
+            return False
+        elif len(v) == 1:
+            return occurs_check(x, v[0], s)
+        else:
+            return occurs_check(x, v[0], s) or occurs_check(x, v[1:], s)
+    else:
+        return False
+
+
 def unify_check(u, v, s):
     u = walk(u, s)
     v = walk(v, s)
@@ -103,29 +126,6 @@ def unify_check(u, v, s):
                 return unify_check(u[1:], v[1:], s)
     elif u == v:
         return s
-    else:
-        return False
-
-
-def ext_s_check(x, v, s):
-    if occurs_check(x, v, s):
-        return False
-    else:
-        s[x] = v
-        return s
-
-
-def occurs_check(x, v, s):
-    v = walk(v, s)
-    if isinstance(v, Var):
-        return v == x
-    elif isinstance(v, list):
-        if len(v) == 0:
-            return False
-        elif len(v) == 1:
-            return occurs_check(x, v[0], s)
-        else:
-            return occurs_check(x, v[0], s) or occurs_check(x, v[1:], s)
     else:
         return False
 
