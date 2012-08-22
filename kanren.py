@@ -170,6 +170,28 @@ def reify(v, s):
 # @@@ work in progress from this point on
 
 
+# This assumes a literal translation of the streams in minikanren as a pair of
+# item and function returning the rest of the stream, so the stream of numbers
+# 1, 2, 3 is (1, lambda: (2, lambda: 3)). The return value is similarly a
+# Scheme-like (1, (2, (3,))) for the list [1, 2, 3].
+# This will change to be more Pythonic once I work out how to change
+# everything else that is based on this approach.
+def map_inf(n, p, a_inf):
+    if not a_inf:
+        return ()
+    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
+        return (p(a_inf),)
+    else:
+        a = a_inf[0]
+        f = a_inf[1]
+        if n is None:
+            return (p(a), map_inf(n, p, f()))
+        elif n > 1:
+            return (p(a), map_inf(n - 1, p, f()))
+        else:
+            return ()
+
+
 def eq(u, v):
     def goal(a):
         s = unify(u, v, a)
