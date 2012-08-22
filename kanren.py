@@ -199,6 +199,7 @@ def pythonic_map_inf(n, p, a_inf):
     return list(islice(imap(p, a_inf), n))
 
 
+# chains two streams
 def mplus(a_inf, f):
     if not a_inf:
         return f()
@@ -208,6 +209,7 @@ def mplus(a_inf, f):
         return (a_inf[0], lambda: mplus(a_inf[1](), f))
 
 
+# interleaves two streams
 def mplusi(a_inf, f):
     if not a_inf:
         return f()
