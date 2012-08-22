@@ -23,10 +23,34 @@ assert occurs_check(Var("y"), 5, s3) == False
 assert occurs_check(Var("x"), Var("x"), {}) == True
 
 
-assert extend_s(Var("y"), Var("x"), s3) == False
-assert extend_s(Var("y"), 5, s3) == {Var("y"): 5, Var("x"): Var("y")}
-assert extend_s(Var("x"), Var("x"), {}) == False
+assert ext_s_check(Var("y"), Var("x"), s3) == False
+assert ext_s_check(Var("y"), 5, s3) == {Var("y"): 5, Var("x"): Var("y")}
+assert ext_s_check(Var("x"), Var("x"), {}) == False
 
+
+assert unify_check(None, 1, {}) == False
+assert unify_check(None, Var("x"), {}) == {Var("x"): None}
+assert unify_check(None, [1, Var("x")], {}) == False
+assert unify_check(1, None, {}) == False
+assert unify_check(1, 1, {}) == {}
+assert unify_check(1, 2, {}) == False
+assert unify_check(1, Var("x"), {}) == {Var("x"): 1}
+assert unify_check(1, [], {}) == False
+assert unify_check(Var("x"), 1, {}) == {Var("x"): 1}
+assert unify_check(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
+assert unify_check(Var("x"), [], {}) == {Var("x"): []}
+assert unify_check(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
+assert unify_check([1, 2, 3], [1, 2, 3], {}) == {}
+assert unify_check([1, 2, 3], [3, 2, 1], {}) == False
+assert unify_check([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
+assert unify_check([[1, 2], [3, 4]], [[1, 2], [3, 4]], {}) == {}
+assert unify_check([[Var("x"), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {Var("x"): 1}
+
+assert unify_check([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
+# however
+assert unify_check([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
+
+assert unify_check({}, {}, {}) == {}
 
 assert unify(None, 1, {}) == False
 assert unify(None, Var("x"), {}) == {Var("x"): None}
@@ -51,30 +75,6 @@ assert unify([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
 assert unify([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
 
 assert unify({}, {}, {}) == {}
-
-assert unify_no_check(None, 1, {}) == False
-assert unify_no_check(None, Var("x"), {}) == {Var("x"): None}
-assert unify_no_check(None, [1, Var("x")], {}) == False
-assert unify_no_check(1, None, {}) == False
-assert unify_no_check(1, 1, {}) == {}
-assert unify_no_check(1, 2, {}) == False
-assert unify_no_check(1, Var("x"), {}) == {Var("x"): 1}
-assert unify_no_check(1, [], {}) == False
-assert unify_no_check(Var("x"), 1, {}) == {Var("x"): 1}
-assert unify_no_check(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
-assert unify_no_check(Var("x"), [], {}) == {Var("x"): []}
-assert unify_no_check(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
-assert unify_no_check([1, 2, 3], [1, 2, 3], {}) == {}
-assert unify_no_check([1, 2, 3], [3, 2, 1], {}) == False
-assert unify_no_check([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
-assert unify_no_check([[1, 2], [3, 4]], [[1, 2], [3, 4]], {}) == {}
-assert unify_no_check([[Var("x"), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {Var("x"): 1}
-
-assert unify_no_check([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
-# however
-assert unify_no_check([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
-
-assert unify_no_check({}, {}, {}) == {}
 
 
 s = {Var("z"): 6, Var("y"): 5, Var("x"): [Var("y"), Var("z")]}
