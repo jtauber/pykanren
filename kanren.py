@@ -182,14 +182,12 @@ def map_inf(n, p, a_inf):
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return (p(a_inf),)
     else:
-        a = a_inf[0]
-        f = a_inf[1]
         if n is None:
-            return (p(a), map_inf(n, p, f()))
+            return (p(a_inf[0]), map_inf(n, p, a_inf[1]()))
         elif n > 1:
-            return (p(a), map_inf(n - 1, p, f()))
+            return (p(a_inf[0]), map_inf(n - 1, p, a_inf[1]()))
         else:
-            return (p(a),)
+            return (p(a_inf[0]),)
 
 
 from itertools import islice, imap
@@ -207,9 +205,7 @@ def mplus(a_inf, f):
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return (a_inf, f)
     else:
-        a = a_inf[0]
-        f0 = a_inf[1]
-        return (a, lambda: mplus(f0(), f))
+        return (a_inf[0], lambda: mplus(a_inf[1](), f))
 
 
 def mplusi(a_inf, f):
@@ -218,9 +214,7 @@ def mplusi(a_inf, f):
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return (a_inf, f)
     else:
-        a = a_inf[0]
-        f0 = a_inf[1]
-        return (a, lambda: mplusi(f(), f0))
+        return (a_inf[0], lambda: mplusi(f(), a_inf[1]))
 
 
 def bind(a_inf, g):
@@ -229,9 +223,7 @@ def bind(a_inf, g):
     elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
         return g(a_inf)
     else:
-        a = a_inf[0]
-        f = a_inf[1]
-        return mplus(g(a), lambda: bind(f(), g))
+        return mplus(g(a_inf[0]), lambda: bind(a_inf[1](), g))
 
 
 def eq(u, v):
