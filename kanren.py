@@ -201,6 +201,28 @@ def pythonic_map_inf(n, p, a_inf):
     return list(islice(imap(p, a_inf), n))
 
 
+def mplus(a_inf, f):
+    if not a_inf:
+        return f()
+    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
+        return (a_inf, f)
+    else:
+        a = a_inf[0]
+        f0 = a_inf[1]
+        return (a, lambda: mplus(f0(), f))
+
+
+def mplusi(a_inf, f):
+    if not a_inf:
+        return f()
+    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
+        return (a_inf, f)
+    else:
+        a = a_inf[0]
+        f0 = a_inf[1]
+        return (a, lambda: mplusi(f(), f0))
+
+
 def eq(u, v):
     def goal(a):
         s = unify(u, v, a)
