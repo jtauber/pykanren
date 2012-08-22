@@ -91,3 +91,6 @@ assert eq(1, 2)({}) == []
 
 assert eq_no_check(1, 1)({}) == [{}]
 assert eq_no_check(1, 2)({}) == []
+
+
+print("all tests passed.")
