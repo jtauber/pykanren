@@ -127,6 +127,13 @@ assert run(None, "q", FAIL) == ()
 assert run(None, "q", eq(True, Var("q"))) == (True,)
 assert run(None, "q", FAIL, eq(True, Var("q"))) == ()
 assert run(None, "q", SUCCESS, eq(True, Var("q"))) == (True,)
+assert run(None, "r", SUCCESS, eq("corn", Var("r"))) == ("corn",)
+assert run(None, "r", FAIL, eq("corn", Var("r"))) == ()
+assert run(None, "q", SUCCESS, eq(False, Var("q"))) == (False,)  # should return (False,) not ("_0",)
 
+assert run(None, "q", (lambda x: eq(True, x))(False)) == ()
+assert run(None, "q", lambda s: (lambda x: all_(eq(True, x), eq(True, Var("q")))(s))(Var("x"))) == (True,)
+
+assert run(None, "x", SUCCESS) == ("_0",)
 
 print("all tests passed.")
