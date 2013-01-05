@@ -232,7 +232,4 @@ def eq(u, v):
 
 def run(n, x, *g):
     x = Var(x)
-    if n is None or n > 0:
-        return map_inf(n, lambda s: reify(walk_star(x, s)), all_(*g)({}))
-    else:
-        return ()
+    return list(map_inf(n, lambda s: reify(walk_star(x, s)), all_(*g)({})))
