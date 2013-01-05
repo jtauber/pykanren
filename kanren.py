@@ -199,8 +199,13 @@ def bind(a_inf, g):
         return mplus(g(a_inf[0]), lambda: bind(a_inf[1](), g))
 
 
-SUCCESS = lambda s: s
-FAIL = lambda s: False
+def SUCCESS(s):
+    yield s
+
+
+def FAIL(s):
+    if False:
+        yield s
 
 
 def all_(*g):
