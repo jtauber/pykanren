@@ -84,12 +84,11 @@ assert walk_star(Var("x"), s) == [5, 6]
 
 assert reify([5, Var("x"), [True, Var("y"), Var("x")], Var("z")]) == [5, "_0", [True, "_1", "_0"], "_2"]
 
+assert list(eq_check(1, 1)({})) == [{}]
+assert list(eq_check(1, 2)({})) == [False]
 
-assert eq_check(1, 1)({}) == {}
-assert eq_check(1, 2)({}) == False
-
-assert eq(1, 1)({}) == {}
-assert eq(1, 2)({}) == False
+assert list(eq(1, 1)({})) == [{}]
+assert list(eq(1, 2)({})) == [False]
 
 
 assert list(map_inf(1, None, [])) == []
