@@ -169,33 +169,11 @@ def reify(v):
 # @@@ work in progress from this point on
 
 
-# This assumes a literal translation of the streams in minikanren as a pair of
-# item and function returning the rest of the stream, so the stream of numbers
-# 1, 2, 3 is (1, lambda: (2, lambda: 3)). The return value is similarly a
-# Scheme-like (1, (2, (3,))) for the list [1, 2, 3].
-# This will change to be more Pythonic once I work out how to change
-# everything else that is based on this approach.
-def map_inf(n, p, a_inf):
-    if a_inf is False or a_inf == ():
-        return ()
-    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
-        return (p(a_inf),)
-    else:
-        if n is None:
-            return (p(a_inf[0]), map_inf(n, p, a_inf[1]()))
-        elif n > 1:
-            return (p(a_inf[0]), map_inf(n - 1, p, a_inf[1]()))
-        else:
-            return (p(a_inf[0]),)
-
-
 from itertools import islice, imap
 
 
-# here's a pythonic version
-# it assumes a_inf is an iterable and returns a list
-def pythonic_map_inf(n, p, a_inf):
-    return list(islice(imap(p, a_inf), n))
+def map_inf(n, p, a_inf):
+    return imap(p, a_inf) if n is None else islice(imap(p, a_inf), n)
 
 
 # chains two streams
