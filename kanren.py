@@ -219,13 +219,13 @@ def all_(*g):
 
 def eq_check(u, v):
     def goal(a):
-        return unify_check(u, v, a)
+        yield unify_check(u, v, a)
     return goal
 
 
 def eq(u, v):
     def goal(a):
-        return unify(u, v, a)
+        yield unify(u, v, a)
     return goal
 
 
