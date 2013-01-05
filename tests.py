@@ -92,22 +92,12 @@ assert eq(1, 1)({}) == {}
 assert eq(1, 2)({}) == False
 
 
-assert map_inf(1, None, ()) == ()
-assert map_inf(None, lambda i: i, 1) == (1,)
-assert map_inf(None, lambda i: i, (1, lambda: 2)) == (1, (2,))
-assert map_inf(3, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
-assert map_inf(2, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2,))
-assert map_inf(1, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)
-assert map_inf(0, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)  # is this correct?
-assert map_inf(None, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
-
-
-assert pythonic_map_inf(1, None, []) == []
-assert pythonic_map_inf(3, lambda i: i, [1, 2, 3]) == [1, 2, 3]
-assert pythonic_map_inf(2, lambda i: i, [1, 2, 3]) == [1, 2]
-assert pythonic_map_inf(1, lambda i: i, [1, 2, 3]) == [1]
-assert pythonic_map_inf(0, lambda i: i, [1, 2, 3]) == []
-assert pythonic_map_inf(None, lambda i: i, [1, 2, 3]) == [1, 2, 3]
+assert list(map_inf(1, None, [])) == []
+assert list(map_inf(3, lambda i: i, [1, 2, 3])) == [1, 2, 3]
+assert list(map_inf(2, lambda i: i, [1, 2, 3])) == [1, 2]
+assert list(map_inf(1, lambda i: i, [1, 2, 3])) == [1]
+assert list(map_inf(0, lambda i: i, [1, 2, 3])) == []
+assert list(map_inf(None, lambda i: i, [1, 2, 3])) == [1, 2, 3]
 
 
 # just a test utility
