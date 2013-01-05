@@ -103,10 +103,10 @@ assert list(map_inf(None, lambda i: i, [1, 2, 3])) == [1, 2, 3]
 assert list(mplus([1, 2, 3], [4, 5])) == [1, 2, 3, 4, 5]
 assert list(mplusi([1, 2, 3], [4, 5])) == [1, 4, 2, 5, 3]
 
-assert all_()({}) == {}
-assert all_(SUCCESS)({}) == {}
-assert all_(eq(1, 1), eq(2, 2))({}) == {}
-assert all_(eq(1, 2), eq(1, 2))({}) == False
+assert list(all_()({})) == [{}]
+assert list(all_(SUCCESS)({})) == [{}]
+assert list(all_(eq(1, 1), eq(2, 2))({})) == [{}]
+assert list(all_(eq(1, 2), eq(1, 2))({})) == [False]
 
 assert run(None, "q", FAIL) == ()
 assert run(None, "q", eq(True, Var("q"))) == (True,)
