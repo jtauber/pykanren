@@ -125,6 +125,7 @@ assert all_(eq(1, 2), eq(1, 2))({}) == False
 
 assert run(None, "q", FAIL) == ()
 assert run(None, "q", eq(True, Var("q"))) == (True,)
+assert run(None, "q", eq(False, Var("q"))) == (False,)
 assert run(None, "q", FAIL, eq(True, Var("q"))) == ()
 assert run(None, "q", SUCCESS, eq(True, Var("q"))) == (True,)
 assert run(None, "r", SUCCESS, eq("corn", Var("r"))) == ("corn",)
