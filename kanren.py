@@ -169,7 +169,7 @@ def reify(v):
 # @@@ work in progress from this point on
 
 
-from itertools import islice, imap
+from itertools import islice, imap, chain, izip_longest
 
 
 def map_inf(n, p, a_inf):
@@ -178,22 +178,16 @@ def map_inf(n, p, a_inf):
 
 # chains two streams
 def mplus(a_inf, f):
-    if a_inf is False or a_inf == ():
-        return f()
-    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
-        return (a_inf, f)
-    else:
-        return (a_inf[0], lambda: mplus(a_inf[1](), f))
+    return chain(a_inf, f)
 
 
 # interleaves two streams
 def mplusi(a_inf, f):
-    if a_inf is False or a_inf == ():
-        return f()
-    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
-        return (a_inf, f)
-    else:
-        return (a_inf[0], lambda: mplusi(f(), a_inf[1]))
+    for a, b in izip_longest(a_inf, f):
+        if a is not None:
+            yield a
+        if b is not None:
+            yield b
 
 
 def bind(a_inf, g):

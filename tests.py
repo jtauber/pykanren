@@ -100,13 +100,8 @@ assert list(map_inf(0, lambda i: i, [1, 2, 3])) == []
 assert list(map_inf(None, lambda i: i, [1, 2, 3])) == [1, 2, 3]
 
 
-# just a test utility
-def expand(x):
-    return map_inf(None, lambda i: i, x)
-
-
-assert expand(mplus((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1, (2, (3, (4, (5,)))))
-assert expand(mplusi((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1, (4, (2, (5, (3,)))))
+assert list(mplus([1, 2, 3], [4, 5])) == [1, 2, 3, 4, 5]
+assert list(mplusi([1, 2, 3], [4, 5])) == [1, 4, 2, 5, 3]
 
 assert all_()({}) == {}
 assert all_(SUCCESS)({}) == {}
