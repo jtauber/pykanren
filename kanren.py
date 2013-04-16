@@ -204,6 +204,7 @@ def SUCCESS(s):
 
 
 def FAIL(s):
+    # this ensures FAIL is a generator that never yields
     if False:
         yield s
 
