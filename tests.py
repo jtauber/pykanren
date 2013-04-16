@@ -84,44 +84,28 @@ assert walk_star(Var("x"), s) == [5, 6]
 
 assert reify([5, Var("x"), [True, Var("y"), Var("x")], Var("z")]) == [5, "_0", [True, "_1", "_0"], "_2"]
 
+assert list(eq_check(1, 1)({})) == [{}]
+assert list(eq_check(1, 2)({})) == [False]
 
-assert eq_check(1, 1)({}) == {}
-assert eq_check(1, 2)({}) == False
-
-assert eq(1, 1)({}) == {}
-assert eq(1, 2)({}) == False
-
-
-assert map_inf(1, None, ()) == ()
-assert map_inf(None, lambda i: i, 1) == (1,)
-assert map_inf(None, lambda i: i, (1, lambda: 2)) == (1, (2,))
-assert map_inf(3, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
-assert map_inf(2, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2,))
-assert map_inf(1, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)
-assert map_inf(0, lambda i: i, (1, lambda: (2, lambda: 3))) == (1,)  # is this correct?
-assert map_inf(None, lambda i: i, (1, lambda: (2, lambda: 3))) == (1, (2, (3,)))
+assert list(eq(1, 1)({})) == [{}]
+assert list(eq(1, 2)({})) == [False]
 
 
-assert pythonic_map_inf(1, None, []) == []
-assert pythonic_map_inf(3, lambda i: i, [1, 2, 3]) == [1, 2, 3]
-assert pythonic_map_inf(2, lambda i: i, [1, 2, 3]) == [1, 2]
-assert pythonic_map_inf(1, lambda i: i, [1, 2, 3]) == [1]
-assert pythonic_map_inf(0, lambda i: i, [1, 2, 3]) == []
-assert pythonic_map_inf(None, lambda i: i, [1, 2, 3]) == [1, 2, 3]
+assert list(map_inf(1, None, [])) == []
+assert list(map_inf(3, lambda i: i, [1, 2, 3])) == [1, 2, 3]
+assert list(map_inf(2, lambda i: i, [1, 2, 3])) == [1, 2]
+assert list(map_inf(1, lambda i: i, [1, 2, 3])) == [1]
+assert list(map_inf(0, lambda i: i, [1, 2, 3])) == []
+assert list(map_inf(None, lambda i: i, [1, 2, 3])) == [1, 2, 3]
 
 
-# just a test utility
-def expand(x):
-    return map_inf(None, lambda i: i, x)
+assert list(mplus([1, 2, 3], [4, 5])) == [1, 2, 3, 4, 5]
+assert list(mplusi([1, 2, 3], [4, 5])) == [1, 4, 2, 5, 3]
 
-
-assert expand(mplus((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1, (2, (3, (4, (5,)))))
-assert expand(mplusi((1, lambda: (2, lambda: 3)), lambda: (4, lambda: 5))) == (1, (4, (2, (5, (3,)))))
-
-assert all_()({}) == {}
-assert all_(SUCCESS)({}) == {}
-assert all_(eq(1, 1), eq(2, 2))({}) == {}
-assert all_(eq(1, 2), eq(1, 2))({}) == False
+assert list(all_()({})) == [{}]
+assert list(all_(SUCCESS)({})) == [{}]
+assert list(all_(eq(1, 1), eq(2, 2))({})) == [{}]
+assert list(all_(eq(1, 2), eq(1, 2))({})) == [False]
 
 assert run(None, "q", FAIL) == ()
 assert run(None, "q", eq(True, Var("q"))) == (True,)

@@ -169,53 +169,25 @@ def reify(v):
 # @@@ work in progress from this point on
 
 
-# This assumes a literal translation of the streams in minikanren as a pair of
-# item and function returning the rest of the stream, so the stream of numbers
-# 1, 2, 3 is (1, lambda: (2, lambda: 3)). The return value is similarly a
-# Scheme-like (1, (2, (3,))) for the list [1, 2, 3].
-# This will change to be more Pythonic once I work out how to change
-# everything else that is based on this approach.
+from itertools import islice, imap, chain, izip_longest
+
+
 def map_inf(n, p, a_inf):
-    if a_inf is False or a_inf == ():
-        return ()
-    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
-        return (p(a_inf),)
-    else:
-        if n is None:
-            return (p(a_inf[0]), map_inf(n, p, a_inf[1]()))
-        elif n > 1:
-            return (p(a_inf[0]), map_inf(n - 1, p, a_inf[1]()))
-        else:
-            return (p(a_inf[0]),)
-
-
-from itertools import islice, imap
-
-
-# here's a pythonic version
-# it assumes a_inf is an iterable and returns a list
-def pythonic_map_inf(n, p, a_inf):
-    return list(islice(imap(p, a_inf), n))
+    return imap(p, a_inf) if n is None else islice(imap(p, a_inf), n)
 
 
 # chains two streams
 def mplus(a_inf, f):
-    if a_inf is False or a_inf == ():
-        return f()
-    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
-        return (a_inf, f)
-    else:
-        return (a_inf[0], lambda: mplus(a_inf[1](), f))
+    return chain(a_inf, f)
 
 
 # interleaves two streams
 def mplusi(a_inf, f):
-    if a_inf is False or a_inf == ():
-        return f()
-    elif not (isinstance(a_inf, tuple) and callable(a_inf[1])):
-        return (a_inf, f)
-    else:
-        return (a_inf[0], lambda: mplusi(f(), a_inf[1]))
+    for a, b in izip_longest(a_inf, f):
+        if a is not None:
+            yield a
+        if b is not None:
+            yield b
 
 
 def bind(a_inf, g):
@@ -227,8 +199,14 @@ def bind(a_inf, g):
         return mplus(g(a_inf[0]), lambda: bind(a_inf[1](), g))
 
 
-SUCCESS = lambda s: s
-FAIL = lambda s: False
+def SUCCESS(s):
+    yield s
+
+
+def FAIL(s):
+    # this ensures FAIL is a generator that never yields
+    if False:
+        yield s
 
 
 def all_(*g):
@@ -242,19 +220,16 @@ def all_(*g):
 
 def eq_check(u, v):
     def goal(a):
-        return unify_check(u, v, a)
+        yield unify_check(u, v, a)
     return goal
 
 
 def eq(u, v):
     def goal(a):
-        return unify(u, v, a)
+        yield unify(u, v, a)
     return goal
 
 
 def run(n, x, *g):
     x = Var(x)
-    if n is None or n > 0:
-        return map_inf(n, lambda s: reify(walk_star(x, s)), all_(*g)({}))
-    else:
-        return ()
+    return list(map_inf(n, lambda s: reify(walk_star(x, s)), all_(*g)({})))
