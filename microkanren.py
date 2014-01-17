@@ -49,6 +49,9 @@ def unify(u, v, s):
         s[v] = u
         return s
     elif isinstance(u, list) and isinstance(v, list):
+        # if we only implemented lists as cons, we could do
+        # s = unify(u[0], v[0], s)
+        # return s and unify(u[1:], v[1:], s)
         if len(u) != len(v):
             return False
         elif len(u) == 1 and len(v) == 1:
