@@ -1,28 +1,28 @@
 # same as I did with minikanren
 #
-# (var c) becomes Var(c)
-# (var? x) becomes isinstance(x, Var)
+# (var c) becomes var(c)
+# (var? x) becomes isinstance(x, var)
 # (var=? x_1 x_2) becomes x_1 == x_2
 
-class Var:
-    def __init__(self, symbol):
-        self.symbol = symbol
+class var:
+    def __init__(self, index):
+        self.index = index
 
     def __eq__(self, other):
-        return isinstance(other, Var) and self.symbol == other.symbol
+        return isinstance(other, var) and self.index == other.index
 
     def __hash__(self):
-        return hash(self.symbol)
+        return hash(self.index)
 
     def __repr__(self):
-        return "<%s>" % self.symbol
+        return "<%s>" % self.index
 
 
 # this also stays the same as the python for minikanren, using a dictionary
 # for substitutions
 
 def walk(u, s):
-    if isinstance(u, Var):
+    if isinstance(u, var):
         a = s.get(u)
         if a:
             return walk(a, s)
@@ -40,12 +40,12 @@ def walk(u, s):
 def unify(u, v, s):
     u = walk(u, s)
     v = walk(v, s)
-    if isinstance(u, Var) and isinstance(v, Var) and u == v:
+    if isinstance(u, var) and isinstance(v, var) and u == v:
         return s
-    elif isinstance(u, Var):
+    elif isinstance(u, var):
         s[u] = v
         return s
-    elif isinstance(v, Var):
+    elif isinstance(v, var):
         s[v] = u
         return s
     elif isinstance(u, list) and isinstance(v, list):
@@ -84,7 +84,7 @@ def eq(u, v):
 def call_fresh(f):
     def goal(state):
         c = state[1]
-        return f(Var(c))((state[0], c + 1))
+        return f(var(c))((state[0], c + 1))
 
     return goal
 
@@ -94,37 +94,37 @@ EMPTY_STATE = ({}, 0)
 
 if __name__ == "__main__":
 
-    s1 = {Var("x"): 5, Var("y"): True}
-    s2 = {Var("y"): 5, Var("x"): Var("y")}
+    s1 = {var(0): 5, var(1): True}
+    s2 = {var(1): 5, var(0): var(1)}
 
-    assert walk(Var("x"), s1) == 5
-    assert walk(Var("x"), s2) == 5
+    assert walk(var(0), s1) == 5
+    assert walk(var(0), s2) == 5
 
     assert unify(None, 1, {}) == False
-    assert unify(None, Var("x"), {}) == {Var("x"): None}
-    assert unify(None, [1, Var("x")], {}) == False
+    assert unify(None, var(0), {}) == {var(0): None}
+    assert unify(None, [1, var(0)], {}) == False
     assert unify(1, None, {}) == False
     assert unify(1, 1, {}) == {}
     assert unify(1, 2, {}) == False
-    assert unify(1, Var("x"), {}) == {Var("x"): 1}
+    assert unify(1, var(0), {}) == {var(0): 1}
     assert unify(1, [], {}) == False
-    assert unify(Var("x"), 1, {}) == {Var("x"): 1}
-    assert unify(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
-    assert unify(Var("x"), [], {}) == {Var("x"): []}
-    assert unify(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
+    assert unify(var(0), 1, {}) == {var(0): 1}
+    assert unify(var(0), var(1), {}) == {var(0): var(1)}
+    assert unify(var(0), [], {}) == {var(0): []}
+    assert unify(var(0), [1, 2, 3], {}) == {var(0): [1, 2, 3]}
     assert unify([1, 2, 3], [1, 2, 3], {}) == {}
     assert unify([1, 2, 3], [3, 2, 1], {}) == False
-    assert unify([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
+    assert unify([var(0), var(1)], [1, 2], {}) == {var(0): 1, var(1): 2}
     assert unify([[1, 2], [3, 4]], [[1, 2], [3, 4]], {}) == {}
-    assert unify([[Var("x"), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {Var("x"): 1}
+    assert unify([[var(0), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {var(0): 1}
 
-    assert unify([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
+    assert unify([1, 2, 3, 4], [1, 2, var(0)], {}) == False
     # however
-    assert unify([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
+    assert unify([1, [2, [3, 4]]], [1, [2, var(0)]], {}) == {var(0): [3, 4]}
 
     assert unify({}, {}, {}) == {}
 
     assert eq(1,1)(EMPTY_STATE) == [EMPTY_STATE]
     assert eq(1,2)(EMPTY_STATE) == []
 
-    assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == [({Var(0): 5}, 1)]
+    assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == [({var(0): 5}, 1)]
