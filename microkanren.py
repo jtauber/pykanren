@@ -68,6 +68,22 @@ def unify(u, v, s):
         return False
 
 
+# for now we're going to treat mzero as [] and (unit x) as [x]
+
+def eq(u, v):
+    def goal(state):
+        s = unify(u, v, state[0])
+        if s is not False:
+            return [(s, state[1])]
+        else:
+            return []
+
+    return goal
+
+
+EMPTY_STATE = ({}, 0)
+
+
 if __name__ == "__main__":
 
     s1 = {Var("x"): 5, Var("y"): True}
@@ -99,3 +115,6 @@ if __name__ == "__main__":
     assert unify([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
 
     assert unify({}, {}, {}) == {}
+
+    assert eq(1,1)(EMPTY_STATE) == [EMPTY_STATE]
+    assert eq(1,2)(EMPTY_STATE) == []
