@@ -93,6 +93,36 @@ def call_fresh(f):
 EMPTY_STATE = ({}, 0)
 
 
+def mplus(stream1, stream2):
+    if stream1 == []:
+        return stream2
+    elif callable(stream1):
+        return lambda: mplus(stream2, stream1())
+    else:
+        return [stream1[0]] + mplus(stream1[1:], stream2)
+
+
+def bind(stream, goal):
+    if stream == []:
+        return []
+    elif callable(stream):
+        return lambda: bind(stream(), goal)
+    else:
+        return mplus(goal(stream[0]), bind(stream[1:], goal))
+
+
+def disj(goal_1, goal_2):
+    def goal(state):
+        return mplus(goal_1(state), goal_2(state))
+    return goal
+
+
+def conj(goal_1, goal_2):
+    def goal(state):
+        return bind(goal_1(state), goal_2)
+    return goal
+
+
 if __name__ == "__main__":
 
     s1 = {var(0): 5, var(1): True}
@@ -131,3 +161,8 @@ if __name__ == "__main__":
     assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == [({var(0): 5}, 1)]
 
     assert EMPTY_STATE == ({}, 0)
+
+    assert conj(
+        call_fresh(lambda a: eq(a, 7)),
+        call_fresh(lambda b: disj(eq(b, 5), eq(b, 6)))
+    )(EMPTY_STATE) == [({var(0): 7, var(1): 5}, 2), ({var(0): 7, var(1): 6}, 2)]
