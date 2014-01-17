@@ -81,6 +81,14 @@ def eq(u, v):
     return goal
 
 
+def call_fresh(f):
+    def goal(state):
+        c = state[1]
+        return f(Var(c))((state[0], c + 1))
+
+    return goal
+
+
 EMPTY_STATE = ({}, 0)
 
 
@@ -118,3 +126,5 @@ if __name__ == "__main__":
 
     assert eq(1,1)(EMPTY_STATE) == [EMPTY_STATE]
     assert eq(1,2)(EMPTY_STATE) == []
+
+    assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == [({Var(0): 5}, 1)]
