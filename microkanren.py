@@ -32,8 +32,11 @@ def walk(u, s):
         return u
 
 
-# as with python for minikanren, there is no need for ext-s as
-# (ext-s x v s) just becomes s[x] = v
+def ext_s(x, v, s):
+    s = s.copy()
+    s[x] = v
+    return s
+
 
 # again, unify stays the same as the python for minikanren
 
@@ -43,11 +46,9 @@ def unify(u, v, s):
     if isinstance(u, var) and isinstance(v, var) and u == v:
         return s
     elif isinstance(u, var):
-        s[u] = v
-        return s
+        return ext_s(u, v, s)
     elif isinstance(v, var):
-        s[v] = u
-        return s
+        return ext_s(v, u, s)
     elif isinstance(u, list) and isinstance(v, list):
         # if we only implemented lists as cons, we could do
         # s = unify(u[0], v[0], s)
@@ -128,3 +129,5 @@ if __name__ == "__main__":
     assert eq(1,2)(EMPTY_STATE) == []
 
     assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == [({var(0): 5}, 1)]
+
+    assert EMPTY_STATE == ({}, 0)
