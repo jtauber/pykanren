@@ -1,3 +1,29 @@
+# LISP-like cons structures
+
+def cons(a, b):
+    return (a, b)
+
+def is_cons(c):
+    return isinstance(c, tuple) and len(c) == 2
+
+def car(c):
+    return c[0]
+
+def cdr(c):
+    return c[1]
+
+
+# helper function for creating nested cons out of lists
+
+def l(*lst):
+    if len(lst) == 1:
+        return cons(lst[0], ())
+    if len(lst) == 2:
+        return cons(*lst)
+    else:
+        return cons(lst[0], l(*lst[1:]))
+
+
 # same as I did with minikanren
 #
 # (var c) becomes var(c)
@@ -16,6 +42,9 @@ class var:
 
     def __repr__(self):
         return "<%s>" % self.index
+
+def is_var(v):
+    return isinstance(v, var)
 
 
 # this also stays the same as the python for minikanren, using a dictionary
@@ -43,41 +72,31 @@ def ext_s(x, v, s):
 def unify(u, v, s):
     u = walk(u, s)
     v = walk(v, s)
-    if isinstance(u, var) and isinstance(v, var) and u == v:
+    if is_var(u) and is_var(v) and u == v:
         return s
-    elif isinstance(u, var):
+    elif is_var(u):
         return ext_s(u, v, s)
-    elif isinstance(v, var):
+    elif is_var(v):
         return ext_s(v, u, s)
-    elif isinstance(u, list) and isinstance(v, list):
-        # if we only implemented lists as cons, we could do
-        # s = unify(u[0], v[0], s)
-        # return s and unify(u[1:], v[1:], s)
-        if len(u) != len(v):
-            return False
-        elif len(u) == 1 and len(v) == 1:
-            return unify(u[0], v[0], s)
-        else:
-            s = unify(u[0], v[0], s)
-            if s is False:
-                return False
-            else:
-                return unify(u[1:], v[1:], s)
+    elif is_cons(u) and is_cons(v):
+        s = unify(car(u), car(v), s)
+        t = unify(cdr(u), cdr(v), s)
+        return t if t is not False else s
     elif u == v:
         return s
     else:
         return False
 
 
-# for now we're going to treat mzero as [] and (unit x) as [x]
+# for now we're going to treat mzero as () and (unit x) as (x, ())
 
 def eq(u, v):
     def goal(state):
-        s = unify(u, v, state[0])
+        s = unify(u, v, car(state))
         if s is not False:
-            return [(s, state[1])]
+            return ((s, cdr(state)), ())
         else:
-            return []
+            return ()
 
     return goal
 
@@ -85,30 +104,30 @@ def eq(u, v):
 def call_fresh(f):
     def goal(state):
         c = state[1]
-        return f(var(c))((state[0], c + 1))
+        return f(var(c))((car(state), c + 1))
 
     return goal
 
 
-EMPTY_STATE = ({}, 0)
+EMPTY_STATE = cons({}, 0)
 
 
 def mplus(stream1, stream2):
-    if stream1 == []:
+    if stream1 == ():
         return stream2
     elif callable(stream1):
         return lambda: mplus(stream2, stream1())
     else:
-        return [stream1[0]] + mplus(stream1[1:], stream2)
+        return cons(car(stream1), mplus(cdr(stream1), stream2))
 
 
 def bind(stream, goal):
-    if stream == []:
-        return []
+    if stream == ():
+        return ()
     elif callable(stream):
         return lambda: bind(stream(), goal)
     else:
-        return mplus(goal(stream[0]), bind(stream[1:], goal))
+        return mplus(goal(car(stream)), bind(cdr(stream), goal))
 
 
 def disj(goal_1, goal_2):
@@ -142,27 +161,25 @@ if __name__ == "__main__":
     assert unify(var(0), 1, {}) == {var(0): 1}
     assert unify(var(0), var(1), {}) == {var(0): var(1)}
     assert unify(var(0), [], {}) == {var(0): []}
-    assert unify(var(0), [1, 2, 3], {}) == {var(0): [1, 2, 3]}
-    assert unify([1, 2, 3], [1, 2, 3], {}) == {}
-    assert unify([1, 2, 3], [3, 2, 1], {}) == False
-    assert unify([var(0), var(1)], [1, 2], {}) == {var(0): 1, var(1): 2}
-    assert unify([[1, 2], [3, 4]], [[1, 2], [3, 4]], {}) == {}
-    assert unify([[var(0), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {var(0): 1}
+    assert unify(var(0), l(1, 2, 3), {}) == {var(0): l(1, 2, 3)}
+    assert unify(l(1, 2, 3), l(1, 2, 3), {}) == {}
+    assert unify(l(1, 2, 3), l(3, 2, 1), {}) == False
+    assert unify(l(var(0), var(1)), l(1, 2), {}) == {var(0): 1, var(1): 2}
+    assert unify(l(l(1, 2), l(3, 4)), l(l(1, 2), l(3, 4)), {}) == {}
+    assert unify(l(l(var(0), 2), l(3, 4)), l(l(1, 2), l(3, 4)), {}) == {var(0): 1}
 
-    assert unify([1, 2, 3, 4], [1, 2, var(0)], {}) == False
-    # however
-    assert unify([1, [2, [3, 4]]], [1, [2, var(0)]], {}) == {var(0): [3, 4]}
+    assert unify((1, (2, (3, 4))), (1, (2, var(0))), {}) == {var(0): (3, 4)}
 
     assert unify({}, {}, {}) == {}
 
-    assert eq(1,1)(EMPTY_STATE) == [EMPTY_STATE]
-    assert eq(1,2)(EMPTY_STATE) == []
+    assert eq(1,1)(EMPTY_STATE) == (EMPTY_STATE, ())
+    assert eq(1,2)(EMPTY_STATE) == ()
 
-    assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == [({var(0): 5}, 1)]
+    assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == (({var(0): 5}, 1), ())
 
     assert EMPTY_STATE == ({}, 0)
 
     assert conj(
         call_fresh(lambda a: eq(a, 7)),
         call_fresh(lambda b: disj(eq(b, 5), eq(b, 6)))
-    )(EMPTY_STATE) == [({var(0): 7, var(1): 5}, 2), ({var(0): 7, var(1): 6}, 2)]
+    )(EMPTY_STATE) == (({var(0): 7, var(1): 5}, 2), (({var(0): 7, var(1): 6}, 2), ()))
