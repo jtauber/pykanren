@@ -18,8 +18,6 @@ def cdr(c):
 def l(*lst):
     if len(lst) == 1:
         return cons(lst[0], ())
-    if len(lst) == 2:
-        return cons(*lst)
     else:
         return cons(lst[0], l(*lst[1:]))
 
@@ -175,11 +173,81 @@ if __name__ == "__main__":
     assert eq(1,1)(EMPTY_STATE) == (EMPTY_STATE, ())
     assert eq(1,2)(EMPTY_STATE) == ()
 
-    assert call_fresh(lambda q: eq(q, 5))(EMPTY_STATE) == (({var(0): 5}, 1), ())
+    # take function
 
-    assert EMPTY_STATE == ({}, 0)
+    def take(n, stream):
+        if n == 0:
+            return ()
+        else:
+            return cons(car(stream), take(n - 1, cdr(stream)))
 
-    assert conj(
+    assert take(0, l(1, 2, 3)) == ()
+    assert take(1, l(1, 2, 3)) == (1, ())
+    assert take(2, l(1, 2, 3)) == (1, (2, ()))
+    assert take(3, l(1, 2, 3)) == (1, (2, (3, ())))
+
+    def take_all(stream):
+        # for now, because we're not using true streams
+        return stream
+
+    # microKanren test programs
+
+    a_and_b = conj(
         call_fresh(lambda a: eq(a, 7)),
         call_fresh(lambda b: disj(eq(b, 5), eq(b, 6)))
-    )(EMPTY_STATE) == (({var(0): 7, var(1): 5}, 2), (({var(0): 7, var(1): 6}, 2), ()))
+    )
+
+    fives = lambda x: disj(
+        eq(x, 5),
+        lambda a_c: lambda: fives(x)(a_c)
+    )
+
+    appendo = lambda l, s, out: disj(
+        conj(
+            eq([], l),
+            eq(s, out),
+        ),
+        call_fresh(
+            lambda a: call_fresh(
+                lambda d: conj(
+                    eq((a, d), l),
+                    call_fresh(
+                        lambda res: conj(
+                            eq((a, res), out),
+                            lambda s_c: lambda: appendo(d, s, res)(s_c)
+                        )
+                    )
+                )
+            )
+        )
+
+    )
+
+    # microKanren tests
+
+    # second-set t1
+    assert car(call_fresh(lambda q: eq(q, 5))(EMPTY_STATE)) == ({var(0): 5}, 1)
+
+    # second-set t2
+    assert cdr(call_fresh(lambda q: eq(q, 5))(EMPTY_STATE)) == ()
+
+    # second-set t3
+    assert car(a_and_b(EMPTY_STATE)) == ({var(0): 7, var(1): 5}, 2)
+
+    # second-set t3, take
+    assert take(1, a_and_b(EMPTY_STATE)) == (({var(0): 7, var(1): 5}, 2), ())
+
+    # second-set t4
+    assert car(cdr(a_and_b(EMPTY_STATE))) == ({var(0): 7, var(1): 6}, 2)
+
+    # second-set t5
+    assert cdr(cdr(a_and_b(EMPTY_STATE))) == ()
+
+    # who cards
+    assert take(1, call_fresh(lambda q: fives(q))(EMPTY_STATE)) == (({var(0): 5}, 1), ())
+
+    # take 2 a-and-b stream
+    assert take(2, a_and_b(EMPTY_STATE)) == (({var(0): 7, var(1): 5}, 2), (({var(0): 7, var(1): 6}, 2), ()))
+
+    # take-all a-and-b stream
+    assert take_all(a_and_b(EMPTY_STATE)) == (({var(0): 7, var(1): 5}, 2), (({var(0): 7, var(1): 6}, 2), ()))
