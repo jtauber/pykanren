@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from kanren import *
+from kanren import *  # noqa
 
 
 s1 = {Var("x"): 5, Var("y"): True}
@@ -18,59 +18,59 @@ assert walk(Var("x"), s2) == 5
 
 
 s3 = {Var("x"): Var("y")}
-assert occurs_check(Var("y"), Var("x"), s3) == True
-assert occurs_check(Var("y"), 5, s3) == False
-assert occurs_check(Var("x"), Var("x"), {}) == True
+assert occurs_check(Var("y"), Var("x"), s3) is True
+assert occurs_check(Var("y"), 5, s3) is False
+assert occurs_check(Var("x"), Var("x"), {}) is True
 
 
-assert ext_s_check(Var("y"), Var("x"), s3) == False
+assert ext_s_check(Var("y"), Var("x"), s3) is False
 assert ext_s_check(Var("y"), 5, s3) == {Var("y"): 5, Var("x"): Var("y")}
-assert ext_s_check(Var("x"), Var("x"), {}) == False
+assert ext_s_check(Var("x"), Var("x"), {}) is False
 
 
-assert unify_check(None, 1, {}) == False
+assert unify_check(None, 1, {}) is False
 assert unify_check(None, Var("x"), {}) == {Var("x"): None}
-assert unify_check(None, [1, Var("x")], {}) == False
-assert unify_check(1, None, {}) == False
+assert unify_check(None, [1, Var("x")], {}) is False
+assert unify_check(1, None, {}) is False
 assert unify_check(1, 1, {}) == {}
-assert unify_check(1, 2, {}) == False
+assert unify_check(1, 2, {}) is False
 assert unify_check(1, Var("x"), {}) == {Var("x"): 1}
-assert unify_check(1, [], {}) == False
+assert unify_check(1, [], {}) is False
 assert unify_check(Var("x"), 1, {}) == {Var("x"): 1}
 assert unify_check(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
 assert unify_check(Var("x"), [], {}) == {Var("x"): []}
 assert unify_check(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
 assert unify_check([1, 2, 3], [1, 2, 3], {}) == {}
-assert unify_check([1, 2, 3], [3, 2, 1], {}) == False
+assert unify_check([1, 2, 3], [3, 2, 1], {}) is False
 assert unify_check([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
 assert unify_check([[1, 2], [3, 4]], [[1, 2], [3, 4]], {}) == {}
 assert unify_check([[Var("x"), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {Var("x"): 1}
 
-assert unify_check([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
+assert unify_check([1, 2, 3, 4], [1, 2, Var("x")], {}) is False
 # however
 assert unify_check([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
 
 assert unify_check({}, {}, {}) == {}
 
-assert unify(None, 1, {}) == False
+assert unify(None, 1, {}) is False
 assert unify(None, Var("x"), {}) == {Var("x"): None}
-assert unify(None, [1, Var("x")], {}) == False
-assert unify(1, None, {}) == False
+assert unify(None, [1, Var("x")], {}) is False
+assert unify(1, None, {}) is False
 assert unify(1, 1, {}) == {}
-assert unify(1, 2, {}) == False
+assert unify(1, 2, {}) is False
 assert unify(1, Var("x"), {}) == {Var("x"): 1}
-assert unify(1, [], {}) == False
+assert unify(1, [], {}) is False
 assert unify(Var("x"), 1, {}) == {Var("x"): 1}
 assert unify(Var("x"), Var("y"), {}) == {Var("x"): Var("y")}
 assert unify(Var("x"), [], {}) == {Var("x"): []}
 assert unify(Var("x"), [1, 2, 3], {}) == {Var("x"): [1, 2, 3]}
 assert unify([1, 2, 3], [1, 2, 3], {}) == {}
-assert unify([1, 2, 3], [3, 2, 1], {}) == False
+assert unify([1, 2, 3], [3, 2, 1], {}) is False
 assert unify([Var("x"), Var("y")], [1, 2], {}) == {Var("x"): 1, Var("y"): 2}
 assert unify([[1, 2], [3, 4]], [[1, 2], [3, 4]], {}) == {}
 assert unify([[Var("x"), 2], [3, 4]], [[1, 2], [3, 4]], {}) == {Var("x"): 1}
 
-assert unify([1, 2, 3, 4], [1, 2, Var("x")], {}) == False
+assert unify([1, 2, 3, 4], [1, 2, Var("x")], {}) is False
 # however
 assert unify([1, [2, [3, 4]]], [1, [2, Var("x")]], {}) == {Var("x"): [3, 4]}
 

@@ -1,13 +1,17 @@
 # LISP-like cons structures
 
+
 def cons(a, b):
     return (a, b)
+
 
 def is_cons(c):
     return isinstance(c, tuple) and len(c) == 2
 
+
 def car(c):
     return c[0]
+
 
 def cdr(c):
     return c[1]
@@ -40,6 +44,7 @@ class var:
 
     def __repr__(self):
         return "<%s>" % self.index
+
 
 def is_var(v):
     return isinstance(v, var)
@@ -148,20 +153,20 @@ if __name__ == "__main__":
     assert walk(var(0), s1) == 5
     assert walk(var(0), s2) == 5
 
-    assert unify(None, 1, {}) == False
+    assert unify(None, 1, {}) is False
     assert unify(None, var(0), {}) == {var(0): None}
-    assert unify(None, [1, var(0)], {}) == False
-    assert unify(1, None, {}) == False
+    assert unify(None, [1, var(0)], {}) is False
+    assert unify(1, None, {}) is False
     assert unify(1, 1, {}) == {}
-    assert unify(1, 2, {}) == False
+    assert unify(1, 2, {}) is False
     assert unify(1, var(0), {}) == {var(0): 1}
-    assert unify(1, [], {}) == False
+    assert unify(1, [], {}) is False
     assert unify(var(0), 1, {}) == {var(0): 1}
     assert unify(var(0), var(1), {}) == {var(0): var(1)}
     assert unify(var(0), [], {}) == {var(0): []}
     assert unify(var(0), l(1, 2, 3), {}) == {var(0): l(1, 2, 3)}
     assert unify(l(1, 2, 3), l(1, 2, 3), {}) == {}
-    assert unify(l(1, 2, 3), l(3, 2, 1), {}) == False
+    assert unify(l(1, 2, 3), l(3, 2, 1), {}) is False
     assert unify(l(var(0), var(1)), l(1, 2), {}) == {var(0): 1, var(1): 2}
     assert unify(l(l(1, 2), l(3, 4)), l(l(1, 2), l(3, 4)), {}) == {}
     assert unify(l(l(var(0), 2), l(3, 4)), l(l(1, 2), l(3, 4)), {}) == {var(0): 1}
@@ -170,8 +175,8 @@ if __name__ == "__main__":
 
     assert unify({}, {}, {}) == {}
 
-    assert eq(1,1)(EMPTY_STATE) == (EMPTY_STATE, ())
-    assert eq(1,2)(EMPTY_STATE) == ()
+    assert eq(1, 1)(EMPTY_STATE) == (EMPTY_STATE, ())
+    assert eq(1, 2)(EMPTY_STATE) == ()
 
     # take function
 
